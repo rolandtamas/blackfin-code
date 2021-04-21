@@ -31,7 +31,20 @@ It provides information needed to link your code. It can be used to configure me
 	</installedComponents>
 	<configurations>
 		<configuration id="com.analog.crosscore.ssldd.pinmux.component">
-			<pinmux-configuration processor="ADSP-BF537" version="1.0"/>
+			<pinmux-configuration processor="ADSP-BF537" version="1.0">
+				<peripheral description="" name="SPI">
+					<signal bit="x" mux="x" name="SCK" pin="13" port="F"/>
+					<signal bit="x" mux="x" name="MISO" pin="12" port="F"/>
+					<signal bit="x" mux="x" name="MOSI" pin="11" port="F"/>
+					<signal bit="x" mux="x" name="SS" pin="14" port="F"/>
+				</peripheral>
+				<gpio name="Port F">
+					<signal bit="x" name="PF11" pin="11" port="F"/>
+					<signal bit="x" name="PF12" pin="12" port="F"/>
+					<signal bit="x" name="PF13" pin="13" port="F"/>
+					<signal bit="x" name="PF14" pin="14" port="F"/>
+				</gpio>
+			</pinmux-configuration>
 		</configuration>
 		<configuration id="com.analog.sourcegen.component.startup_ldf">
 			<startup_ldf-configuration>
@@ -49,7 +62,7 @@ It provides information needed to link your code. It can be used to configure me
 						<property name="startup_code_schema" value="28.01"/>
 					</propertygroup>
 					<crt>
-						<propertygroup name="cplb_init" value="true">
+						<propertygroup name="" value="true">
 							<property name="cplb_src_file" value="app_cplbtab.c"/>
 							<property name="cplb_ctrl" value="57"/>
 							<property name="cplb_obj_file" value="app_cplbtab.doj"/>

@@ -3,6 +3,8 @@
  *****************************************************************************/
 
 #include <sys/platform.h>
+#include <cdefBF537.h>
+#include <ccblkfn.h>
 #include "adi_initialize.h"
 #include "Slave.h"
 
@@ -20,8 +22,19 @@ int main(int argc, char *argv[])
 	 */
 	adi_initComponents();
 	
-	/* Begin adding your custom code here */
+
 
 	return 0;
+}
+
+void SPIInitialization()
+{
+	//set PF11 as input pin
+	*pPORTFIO_INEN = 0x0800;
+
+	//enable this device as a slave
+	SPI_CTL = 0x0010;
+
+
 }
 
