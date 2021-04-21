@@ -1,0 +1,61 @@
+!SESSION 2021-04-20 09:30:12.354 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.8.0_102
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86
+
+!ENTRY com.analog.crosscore.core 1 0 2021-04-20 09:31:09.873
+!MESSAGE 2021-04-20 09:31:09, 871 [Thread: main] INFO - CrossCore(R) Embedded Studio 2.9.4.0 w2101224
+
+
+!ENTRY com.analog.crosscore.core 1 0 2021-04-20 09:31:09.874
+!MESSAGE 2021-04-20 09:31:09, 873 [Thread: main] INFO - CCES install path: C:/Analog Devices/CrossCore Embedded Studio 2.9.4/; environment variable CCES_HOME: not set
+
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-04-20 09:31:42.478
+!MESSAGE Indexed 'Master' (0 sources, 0 headers) in 0.001 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-04-20 09:31:43.252
+!MESSAGE Indexed 'Master' (0 sources, 0 headers) in 0.001 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-04-20 09:31:47.866
+!MESSAGE Indexed 'Master' (6 sources, 41 headers) in 1.11 sec: 4,890 declarations; 10,932 references; 0 unresolved inclusions; 2 syntax errors; 348 unresolved names (2.2%)
+
+!ENTRY org.eclipse.launchbar.core 2 0 2021-04-20 11:16:25.356
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2021-04-20 11:16:25.358
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.cdt.dsf.ui 2 0 2021-04-20 11:23:21.666
+!MESSAGE Unable to locate file: C:\Jenkins_edinw\workspace\CCES2_9_4_build_compiler_and_libs_bf\DSPLIB\LIBC\src\platform\frio\crt\cec_int_dispatcher.asm
+
+!ENTRY org.eclipse.cdt.dsf.ui 2 0 2021-04-20 11:23:58.704
+!MESSAGE Unable to locate file: C:\Jenkins_edinw\workspace\CCES2_9_4_build_compiler_and_libs_bf\DSPLIB\LIBC\src\platform\frio\crt\cec_int_dispatcher.asm
+
+!ENTRY org.eclipse.cdt.dsf.ui 2 0 2021-04-20 12:34:29.943
+!MESSAGE Unable to locate file: C:\Jenkins_edinw\workspace\CCES2_9_4_build_compiler_and_libs_bf\DSPLIB\LIBC\src\platform\frio\crt\cec_int_dispatcher.asm
+
+!ENTRY org.eclipse.cdt.dsf.ui 2 0 2021-04-20 13:41:06.036
+!MESSAGE Unable to locate file: C:\Jenkins_edinw\workspace\CCES2_9_4_build_compiler_and_libs_bf\DSPLIB\LIBC\src\platform\frio\crt\cec_int_dispatcher.asm
+!SESSION 2021-04-21 10:07:42.493 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.8.0_102
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86
+
+!ENTRY com.analog.crosscore.core 1 0 2021-04-21 10:07:55.653
+!MESSAGE 2021-04-21 10:07:55, 650 [Thread: main] INFO - CrossCore(R) Embedded Studio 2.9.4.0 w2101224
+
+
+!ENTRY com.analog.crosscore.core 1 0 2021-04-21 10:07:55.655
+!MESSAGE 2021-04-21 10:07:55, 654 [Thread: main] INFO - CCES install path: C:/Analog Devices/CrossCore Embedded Studio 2.9.4/; environment variable CCES_HOME: not set
+
+
+!ENTRY org.eclipse.launchbar.core 2 0 2021-04-21 14:24:06.756
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2021-04-21 14:24:06.762
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType

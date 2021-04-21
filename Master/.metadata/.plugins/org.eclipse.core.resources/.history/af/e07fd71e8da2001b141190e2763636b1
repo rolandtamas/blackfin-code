@@ -1,0 +1,139 @@
+/*****************************************************************************
+ * Master.c
+ *****************************************************************************/
+
+#include <sys/platform.h>
+#include "adi_initialize.h"
+#include "Master.h"
+//#include <stdio.h>
+//#include <drivers/spi/adi_spi.h>
+
+/** 
+ * If you want to use command program arguments, then place them in the following string. 
+ */
+char __argv_string[] = "";
+
+/*FILE *open_output_file(void)
+{
+	// Open file for writing as binary
+	FILE *handle = fopen("output.dat", "wb");
+	if(handle == NULL)  exit(1);
+
+	return handle;
+}*/
+
+/*int main(int argc, char *argv[])
+{
+	adi_initComponents();
+	
+	FILE *output_file;
+	output_file = open_output_file();
+
+    // flag indicating the is a SPI transceiver available
+    static bool bAvailable = false;
+
+    // pointer to store transceiver
+    ADI_SPI_TRANSCEIVER *pTrans;
+
+    // SPI driver handle
+    ADI_SPI_HANDLE hDevice;
+
+    // SPI driver memory
+    uint8_t driverMemory[ADI_SPI_INT_MEMORY_SIZE];
+
+    // driver API result code
+	ADI_SPI_RESULT result;
+
+	// transceiver buffers
+	uint8_t Prologue[4]  = {0x00, 0x01, 0x02, 0x03};
+	uint8_t TxBuffer[8]  = {0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03};
+	uint8_t RxBuffer[8];
+
+	// transceiver configurations
+	ADI_SPI_TRANSCEIVER Transceiver1  = {&Prologue[0], 4, &TxBuffer[0], 8, &RxBuffer[0], 8};
+	ADI_SPI_TRANSCEIVER Transceiver2  = {NULL,         4, &TxBuffer[0], 8, NULL,         0 };
+
+	 adi_spi_Open(0, driverMemory, ADI_SPI_DMA_MEMORY_SIZE *2, &hDevice);
+
+	 adi_spi_SetMaster(hDevice, true);
+
+	 adi_spi_SetHwSlaveSelect(hDevice, false);
+
+	 adi_spi_SetTransmitUnderflow(hDevice, true);
+
+     adi_spi_SetClock(hDevice, 4ul - 1ul);
+
+	 //adi_spi_SetClockPhase(hDevice, false);
+
+	 adi_spi_SetSlaveSelect(hDevice, ADI_SPI_SSEL_ENABLE1);
+
+	 adi_spi_SetWordSize(hDevice, ADI_SPI_TRANSFER_8BIT);
+
+	// adi_spi_SetTxWatermark(hDevice, ADI_SPI_WATERMARK_50, ADI_SPI_WATERMARK_DISABLE, ADI_SPI_WATERMARK_DISABLE);
+
+	// adi_spi_SetRxWatermark(hDevice, ADI_SPI_WATERMARK_50, ADI_SPI_WATERMARK_DISABLE, ADI_SPI_WATERMARK_DISABLE);
+
+	adi_spi_RegisterCallback(hDevice, NULL, NULL);
+
+	adi_spi_EnableDmaMode(hDevice, false);
+	fclose(output_file);
+	return 0;
+}*/
+
+
+#include <drivers/spi/adi_spi.h>
+#include <stdio.h>
+
+
+
+/* SPI driver memory */
+uint8_t SPIDriverMemory[ADI_SPI_INT_MEMORY_SIZE];
+
+int main(void)
+{
+    /* SPI driver handle */
+    ADI_SPI_HANDLE hDevice;
+
+    /* driver API result code */
+	ADI_SPI_RESULT result;
+
+	/* transceiver buffers */
+	uint8_t Prologue[4]  = {0x00, 0x01, 0x02, 0x03};
+	uint8_t TxBuffer[8]  = {0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03};
+	uint8_t RxBuffer[8];
+
+	/* transceiver configurations */
+	ADI_SPI_TRANSCEIVER Transceiver1  = {&Prologue[0], 4, &TxBuffer[0], 8, &RxBuffer[0], 8};
+	ADI_SPI_TRANSCEIVER Transceiver2  = {NULL,         4, &TxBuffer[0], 8, NULL,         0 };
+
+	/* Initialize managed drivers and/or services */
+	adi_initComponents();
+
+    /* open the SPI driver */
+    result = adi_spi_Open(0, SPIDriverMemory, (uint32_t)ADI_SPI_DMA_MEMORY_SIZE, &hDevice);
+
+
+
+
+     result = adi_spi_SetMaster(hDevice,true);
+     adi_spi_SetHwSlaveSelect(hDevice,true);
+     adi_spi_SetSlaveSelect(hDevice,ADI_SPI_SSEL_ENABLE1);
+     adi_spi_SetWordSize(hDevice, ADI_SPI_TRANSFER_8BIT);
+     adi_spi_SetClock(hDevice, 1000000);
+
+
+    /* No callbacks required*/
+	result = adi_spi_RegisterCallback(hDevice, NULL, NULL);
+
+    /* Disable DMA */
+	result = adi_spi_EnableDmaMode(hDevice, false);
+
+    /* submit the SPI transceiver's buffers */
+	result = adi_spi_ReadWrite(hDevice, &Transceiver1);
+	result = adi_spi_ReadWrite(hDevice, &Transceiver2);
+
+	/* close the SPI driver */
+	result = adi_spi_Close(hDevice);
+
+    return 0;
+}

@@ -1,0 +1,35 @@
+/*****************************************************************************
+ * Master.c
+ *****************************************************************************/
+
+#include <sys/platform.h>
+#include "adi_initialize.h"
+#include "Master.h"
+#include <stdio.h>
+
+/** 
+ * If you want to use command program arguments, then place them in the following string. 
+ */
+char __argv_string[] = "";
+
+FILE *open_output_file(void)
+{
+	/* Open file for writing as binary */
+	FILE *handle = fopen("output.dat", "wb");
+	if(handle == NULL)  exit(1);
+
+	return handle;
+}
+
+int main(int argc, char *argv[])
+{
+	adi_initComponents();
+	
+	FILE *output_file;
+	output_file = open_output_file();
+
+
+
+	return 0;
+}
+

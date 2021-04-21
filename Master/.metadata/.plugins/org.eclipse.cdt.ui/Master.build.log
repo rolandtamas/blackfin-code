@@ -1,0 +1,15 @@
+16:58:39 **** Incremental Build of configuration Debug for project Master ****
+make all 
+'Building file: ../src/Master.c'
+'Invoking: CrossCore Blackfin C/C++ Compiler'
+ccblkfn -c -file-attr ProjectName="Master" -proc ADSP-BF537 -flags-compiler --no_wrap_diagnostics -si-revision any -g -DCORE0 -D_DEBUG @includes-3893f3acf3d67f980694af8fdf0bb42e.txt -structs-do-not-overlap -no-const-strings -no-multiline -warn-protos -double-size-32 -decls-strong -cplbs -gnu-style-dependencies -MD -Mo "src/Master.d" -o "src/Master.doj" "../src/Master.c"
+'Finished building: ../src/Master.c'
+' '
+'Building target: Master.dxe'
+'Invoking: CrossCore Blackfin Linker'
+ccblkfn -proc ADSP-BF537 -si-revision any -TC:/Users/anita/Desktop/Licenta\ New/Master/system/startup_ldf/app.ldf -no-mem -LC:/Users/anita/Desktop/Licenta\ New/Master/Debug/system/startup_ldf -flags-link -MDCORE0,-MDDEBUG -add-debug-libpaths -flags-link -MDUSE_CACHE -o Master.dxe @input-file.txt  -flags-link -od,.\.
+'Finished building target: Master.dxe'
+' '
+
+16:58:43 Build Finished (took 4s.2ms)
+

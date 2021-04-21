@@ -1,0 +1,92 @@
+/*****************************************************************************
+ * Master.c
+ *****************************************************************************/
+
+#include <sys/platform.h>
+#include "adi_initialize.h"
+#include "Master.h"
+#include <stdio.h>
+#include <drivers/spi/adi_spi.h>
+
+/** 
+ * If you want to use command program arguments, then place them in the following string. 
+ */
+char __argv_string[] = "";
+
+FILE *open_output_file(void)
+{
+	/* Open file for writing as binary */
+	FILE *handle = fopen("output.dat", "wb");
+	if(handle == NULL)  exit(1);
+
+	return handle;
+}
+
+int main(int argc, char *argv[])
+{
+	adi_initComponents();
+	
+	FILE *output_file;
+	output_file = open_output_file();
+
+    /* flag indicating the is a SPI transceiver available */
+    static bool bAvailable = false;
+
+    /* pointer to store transceiver */
+    ADI_SPI_TRANSCEIVER *pTrans;
+
+    /* SPI driver handle */
+    ADI_SPI_HANDLE hDevice;
+
+    /* SPI driver memory */
+    uint8_t driverMemory[ADI_SPI_INT_MEMORY_SIZE];
+
+    /* driver API result code */
+	ADI_SPI_RESULT result;
+
+	/* transceiver buffers */
+	uint8_t Prologue[4]  = {0x00, 0x01, 0x02, 0x03};
+	uint8_t TxBuffer[8]  = {0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03};
+	uint8_t RxBuffer[8];
+
+	/* transceiver configurations */
+	ADI_SPI_TRANSCEIVER Transceiver1  = {&Prologue[0], 4, &TxBuffer[0], 8, &RxBuffer[0], 8};
+	ADI_SPI_TRANSCEIVER Transceiver2  = {NULL,         4, &TxBuffer[0], 8, NULL,         0 };
+
+    /* open the SPI driver */
+    result = adi_spi_Open(0, driverMemory, (uint32_t)ADI_SPI_DMA_MEMORY_SIZE, &hDevice);
+
+
+
+     adi_spi_SetMaster(&hDevice,false);
+     adi_spi_SetHwSlaveSelect(&hDevice,true);
+     adi_spi_SetSlaveSelect(&hDevice, ADI_SPI_SSEL_ENABLE1);
+     adi_spi_SetWordSize(&hDevice, ADI_SPI_TRANSFER_16BIT);
+     //adi_spi_SetClock();
+
+
+    /* No callbacks required*/
+	result = adi_spi_RegisterCallback(hDevice, NULL, NULL);
+
+    /* Disable DMA */
+	result = adi_spi_EnableDmaMode(hDevice, false);
+
+    /* submit the SPI transceiver's buffers */
+	result = adi_spi_SubmitBuffer(hDevice, &Transceiver1);
+	result = adi_spi_SubmitBuffer(hDevice, &Transceiver2);
+
+	/* wait here until a transceiver is available */
+	while(bAvailable == false)
+	{
+		result = adi_spi_IsBufferAvailable(hDevice, &bAvailable);
+	}
+
+	/* fetch the transceiver buffer just processed */
+	result = adi_spi_GetBuffer(hDevice, &pTrans);
+
+	/* close the SPI driver */
+	result = adi_spi_Close(hDevice);
+	fclose(output_file);
+	return 0;
+}
+
