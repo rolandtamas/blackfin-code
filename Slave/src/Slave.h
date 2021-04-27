@@ -13,4 +13,8 @@ typedef struct SPI_DATA
 
 SPI_DATA data[1000];
 
+void readData();
+
+void spiInitialization();
+
 #endif /* __SLAVE_H__ */
