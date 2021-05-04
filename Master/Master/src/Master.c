@@ -1,126 +1,123 @@
-/*****************************************************************************
- * Master.c
- *****************************************************************************/
-
 #include <sys/platform.h>
-#include <drivers/spi/adi_spi.h>
-#include <stdio.h>
 #include "adi_initialize.h"
 #include "Master.h"
+#include <cdefBF537.h>
+#include <cdefbf537.h>
+#include <ccblkfn.h>
+#include <sys/exception.h>
+#include <stdint.h>
 
-/** 
- * If you want to use command program arguments, then place them in the following string. 
- */
+
+//Set value for SPI_CTL register
+#define SPI_CTL_SPE 1 << 14     //enable SPI
+#define SPI_CTL_WOM 0 << 13     // normal
+#define SPI_CTL_MSTR 1 << 12    // on 1 set as master
+#define SPI_CTL_CPOL 0 << 11    // active high SCK
+#define SPI_CTL_CPHA 0 << 10    // SCK toggles form the middle of the first data bit, slave select pins are controlled by HW
+#define SPI_CTL_LSBF 1 << 9     // LSB sent/received first
+#define SPI_CTL_SIZE 1 << 8     //transfer size of 16 bits
+#define SPI_CTL_EMISO 0 << 5    //do not configure MISO pin as output
+#define SPI_CTL_PSSE 0 << 4     //do not enable SPISS input for master
+#define SPI_CTL_GM 1 << 3       // When SPI_RDBR is full: discard incoming data(set bit on 0), get more data and overwrite prev data (set on 1)
+#define SPI_CTL_SZ 1 << 2       //when SPI_TDBR is empty: send last word (bit on 0), send zeros (bit on 1)
+#define SPI_CTL_TIMOD1 0 << 1   //set TIMOD[1:0] to 01 to initiate a transfer when transmit buffer is written
+#define SPI_CTL_TIMOD0 0
+
+#define SPI_CTL_REG (SPI_CTL_SPE | SPI_CTL_WOM | SPI_CTL_MSTR | SPI_CTL_CPOL |SPI_CTL_CPHA | SPI_CTL_LSBF | SPI_CTL_SIZE | SPI_CTL_EMISO | SPI_CTL_PSSE | SPI_CTL_GM | SPI_CTL_SZ | SPI_CTL_TIMOD1 | SPI_CTL_TIMOD0)
+
+
+
+//Set value for PORT_FER register
+#define SPI_PORT_FER 0x3C00 //set bit 13 for SCK, bit 12 for MISO, bit 11 for MOSI and bit 10 SPISSE1
+
+
+
+
+//Set value for SPI_BAUD register
+#define SPI_BAUD_REG 0x000F;   //set on 0x0005 later
+
+EX_INTERRUPT_HANDLER(SPI_ISR);
+
 char __argv_string[] = "";
 
-/*FILE *open_output_file(void)
+
+volatile int cnt = 0;
+volatile uint16_t data_in;
+uint16_t data_out;
+
+
+
+
+void spi_init_port(void)
 {
-	// Open file for writing as binary
-	FILE *handle = fopen("output.dat", "wb");
-	if(handle == NULL)  exit(1);
-
-	return handle;
-}*/
-
-/*int main(int argc, char *argv[])
-{
-	FILE *output_file;
-	output_file = open_output_file();
-
-	fclose(output_file);
-}*/
-
-
-
-
-/* flag indicating if SPI processing is complete */
-static bool bComplete = false;
-
-/* SPI callback */
-void SpiCallback(void* pHandle, uint32_t u32Arg, void* pArg)
-{
-    ADI_SPI_HANDLE pDevice = (ADI_SPI_HANDLE *)pHandle;
-    ADI_SPI_EVENT event = (ADI_SPI_EVENT)u32Arg;
-    uint16_t *data = (uint16_t*)pArg;
-
-    switch (event) {
-        case ADI_SPI_TRANSCEIVER_PROCESSED:
-            bComplete = true;
-            break;
-    default:
-        break;
-    }
+	*pPORTF_FER = SPI_PORT_FER;
+	//uint16_t a = *pPORTF_FER;
+	ssync();
 }
 
-/* SPI driver memory */
-uint8_t SPIDriverMemory[ADI_SPI_INT_MEMORY_SIZE];
-
-int main(void)
+void spi_init_master(void)
 {
-    /* SPI driver handle */
-    ADI_SPI_HANDLE hDevice;
+	uint16_t data = 0;
+	//data = *pPLL_DIV;
 
-    /* driver API result code */
-	ADI_SPI_RESULT result;
 
-	/* transceiver buffers */
-	uint8_t Prologue[4]  = {0x00, 0x01, 0x02, 0x03};
-	uint8_t TxBuffer[8]  = {0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03};
-	uint8_t RxBuffer[8];
+	*pSPI_FLG = 0x0202; //set bit 1 in order to enable SPISSEL1 and bit 9 to 1 in order to deactivate transmission
+	uint16_t a = *pSPI_FLG;
+	*pSPI_BAUD = SPI_BAUD_REG;
+	//uint16_t b = *pSPI_BAUD;
+	*pSPI_CTL = SPI_CTL_REG;
+	//uint16_t c = *pSPI_CTL;
+	ssync();
 
-	uint16_t clock_freq = 0x1;
-	/* transceiver configurations */
-	ADI_SPI_TRANSCEIVER Transceiver1  = {&Prologue[0], 4, &TxBuffer[0], 8, &RxBuffer[0], 8};
-	ADI_SPI_TRANSCEIVER Transceiver2  = {NULL,         4, &TxBuffer[0], 8, NULL,         0 };
+	data = *pSPI_RDBR;
+}
 
-	printf("%x", Transceiver1.ReceiverBytes);
 
-	/* Initialize managed drivers and/or services */
+void initInterrupts(void)
+{
+	//*pSIC_IAR3 |= 0x3FF;
+	*pSIC_IMASK |= 0x400;
+	register_handler(ik_ivg10, SPI_ISR);
+	ssync();
+}
+
+
+void spi_init_data(void)
+{
+	data_out = 0x1234;
+}
+
+EX_INTERRUPT_HANDLER(SPI_ISR)
+{
+	if (*pSPI_STAT & TXS == 1)
+	{
+		*pSPI_TDBR = data_out;
+		ssync();
+	}
+
+	if (*pSPI_STAT & RXS == 1)
+	{
+		data_in = *pSPI_RDBR;
+	}
+
+	cnt = 1;
+
+	//*pSPI_CTL &= 0xBFFF;
+}
+
+void main(int argc, char* argv[])
+{
 	adi_initComponents();
+	spi_init_port();
+	initInterrupts();
+	spi_init_data();
+	spi_init_master();
 
-    /* open the SPI driver */
-    result = adi_spi_Open(0, SPIDriverMemory, (uint32_t)ADI_SPI_DMA_MEMORY_SIZE, &hDevice);
-
-
-
-
-     result = adi_spi_SetMaster(hDevice,true);
-     result = adi_spi_SetHwSlaveSelect(hDevice,true);
-     result = adi_spi_SetSlaveSelect(hDevice,ADI_SPI_SSEL_ENABLE1);
-     result = adi_spi_SetWordSize(hDevice, ADI_SPI_TRANSFER_8BIT);
-     result = adi_spi_SetClock(hDevice, clock_freq);
-
-     //set msb,lsb
-
-    /* No callbacks required*/
-	//result = adi_spi_RegisterCallback(hDevice, NULL, NULL); //////////
-
-    /* Disable DMA */
-	result = adi_spi_EnableDmaMode(hDevice, false);
-
-    /* submit the SPI transceiver's buffers */
-	//result = adi_spi_ReadWrite(hDevice, &Transceiver1);/////////////////
-	//result = adi_spi_ReadWrite(hDevice, &Transceiver2);/////////////////
-
-	/* Register a callback for the DMA */
-		result = adi_spi_RegisterCallback(hDevice, SpiCallback, NULL);
-
-	    /* submit the SPI transceiver's buffers */
-		result = adi_spi_SubmitBuffer(hDevice, &Transceiver1);
-		result = adi_spi_SubmitBuffer(hDevice, &Transceiver2);
-
-	    while(!bComplete)
-	    {
-
-		    /* do other processing here while SPI is processing */
-	    }
-
-
-		printf("%x", Transceiver1.pReceiver);
-
-
-	/* close the SPI driver */
-	result = adi_spi_Close(hDevice);
-
-    return 0;
+	//*pSPI_TDBR = data_out;
+	uint16_t data = 0;
+	data = *pSPI_RDBR;
+	while (cnt == 0)
+	{
+		;
+	}
 }
